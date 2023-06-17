@@ -70,4 +70,27 @@ public class Library
 
         return lateItems;
     }
+    
+    public List<Item> GetLateItems()
+    {
+        DateTime current = DateTime.Now;
+        List<Item> lateItems = new List<Item>();
+        foreach (var user in Users)
+        {
+            foreach (var item in user.BorrowedItems)
+            {
+                if (item.IsBorrowed)
+                {
+                    TimeSpan difference = current - item.BorrowDate;
+
+                    if (difference.TotalDays < 0)
+                    {
+                        lateItems.Add(item);
+                    }
+                }
+            }
+        }
+
+        return lateItems;
+    }
 }
