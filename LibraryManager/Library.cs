@@ -4,8 +4,8 @@ namespace LibraryManager;
 
 public class Library
 {
-    private List<Item> Items;
-    private List<User> Users;
+    public List<Item> Items;
+    public List<User> Users;
 
     public Library()
     {
@@ -41,32 +41,33 @@ public class Library
         user.BorrowedItems.Add(item);
     }
 
-    public void ReturnDate(Item item, User user)
+    public void ReturnItem(Item item, User user)
     {
         item.IsBorrowed = false;
         item.ReturnDate = DateTime.Now;
         user.BorrowedItems.Remove(item);
     }
 
-    public Item GetLateReturnItems()
+    public List<(Item,User)> GetLateReturnItems()
     {
         DateTime current = DateTime.Now;
-        Item lateItem = null;
-        TimeSpan maxTime = TimeSpan.MinValue;
-
-        foreach (var item in Items)
+        List<(Item,User)> lateItems = new List<(Item,User)>();
+        foreach (var user in Users)
         {
-            if (item.IsBorrowed)
+            foreach (var item in user.BorrowedItems)
             {
-                TimeSpan time = current - item.BorrowDate;
-                if (time > maxTime)
+                if (item.IsBorrowed)
                 {
-                    maxTime = time;
-                    lateItem = item;
+                    TimeSpan difference = current - item.BorrowDate;
+
+                    if (difference.TotalDays < 0)
+                    {
+                        lateItems.Add((item, user));
+                    }
                 }
             }
         }
 
-        return lateItem;
+        return lateItems;
     }
 }
